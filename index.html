@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ysura Reisekostenrichtlinie</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: sticky header with language switch; left table of contents + one reading column (~68ch); stacks to one column on phones. */
+:root {
+  --bg: #f6f7f5;
+  --surface: #ffffff;
+  --fg: #1b2220;
+  --muted: #5a6561;
+  --line: #dde2df;
+  --accent: #1e5d70;
+  --accent-soft: #e2edf0;
+  --mark: #fff1bf;
+  --font-display: "Literata", Georgia, "Times New Roman", serif;
+  --font-body: "Public Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121716; --surface: #1a2120; --fg: #e5eae7; --muted: #9ba7a2;
+    --line: #2c3633; --accent: #85c0d1; --accent-soft: #1c3139; --mark: #3b3519;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121716; --surface: #1a2120; --fg: #e5eae7; --muted: #9ba7a2;
+  --line: #2c3633; --accent: #85c0d1; --accent-soft: #1c3139; --mark: #3b3519;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: calc(76px + env(safe-area-inset-top, 0px)); }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface);
+}
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+/* Header */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+}
+.top-inner {
+  max-width: 1120px; margin: 0 auto;
+  padding-block: 12px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.brand { display: flex; flex-direction: column; min-width: 0; }
+.brand strong { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; line-height: 1.25; }
+.brand span { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); letter-spacing: .02em; }
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--bg); }
+.lang button {
+  font: 600 .8rem/1 var(--font-body); letter-spacing: .06em;
+  border: 0; background: transparent; color: var(--muted);
+  padding: 8px 14px; border-radius: 999px; cursor: pointer;
+}
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--surface); }
+
+/* Main grid */
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; align-items: start;
+}
+nav.toc { position: sticky; top: calc(84px + env(safe-area-inset-top, 0px)); max-height: calc(100vh - 110px); overflow-y: auto; }
+.toc details > summary {
+  list-style: none; cursor: default;
+  font: 600 .72rem/1 var(--font-body); text-transform: uppercase; letter-spacing: .1em; color: var(--muted);
+  margin-bottom: 12px;
+}
+.toc details > summary::-webkit-details-marker { display: none; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.toc a {
+  display: grid; grid-template-columns: 4.2em 1fr; gap: 6px;
+  text-decoration: none; color: var(--fg); font-size: .88rem; line-height: 1.35;
+  padding: 5px 8px; border-radius: 6px;
+}
+.toc a .n { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); padding-top: 2px; }
+.toc a.l2 { padding-left: 18px; color: var(--muted); }
+.toc a.l3 { padding-left: 30px; color: var(--muted); font-size: .84rem; }
+.toc a:hover { background: var(--accent-soft); }
+.toc a.active { background: var(--accent-soft); color: var(--accent); }
+
+/* Article */
+article { max-width: 68ch; min-width: 0; }
+.meta {
+  display: flex; flex-wrap: wrap; gap: 8px 20px;
+  font-size: .85rem; color: var(--muted); padding-bottom: 20px; margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.meta b { color: var(--fg); font-weight: 600; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; line-height: 1.25; position: relative; }
+h1 { font-size: 2.1rem; margin: 0 0 12px; }
+h2 { font-size: 1.6rem; margin: 56px 0 12px; padding-top: 20px; border-top: 2px solid var(--fg); }
+h3 { font-size: 1.25rem; margin: 36px 0 8px; }
+h4 { font-size: 1.05rem; margin: 28px 0 6px; font-weight: 500; }
+.num { font-family: var(--font-mono); font-weight: 500; font-size: .7em; color: var(--accent); margin-right: .55em; letter-spacing: .02em; }
+p, ul, ol.plain { margin: 0 0 14px; }
+ul { padding-left: 1.3em; }
+li { margin-bottom: 4px; }
+li::marker { color: var(--accent); }
+dl.modes { margin: 16px 0 0; display: grid; gap: 18px; }
+dl.modes dt { font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+dl.modes dd { margin: 4px 0 0; }
+.note {
+  background: var(--accent-soft); border-radius: 8px; padding: 12px 16px; margin: 14px 0; font-size: .95rem;
+}
+.note strong { color: var(--accent); }
+.addr { font-family: var(--font-mono); font-size: .9rem; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; display: inline-block; line-height: 1.55; margin: 4px 0 14px; }
+.tbl { overflow-x: auto; margin: 16px 0; }
+table { border-collapse: collapse; min-width: 320px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 9px 20px 9px 0; border-bottom: 1px solid var(--line); }
+th { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+td.amt { font-family: var(--font-mono); font-weight: 500; }
+.contacts { display: grid; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; }
+.contacts li { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.contacts code { font-family: var(--font-mono); font-size: .88rem; user-select: all; }
+footer.foot { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .82rem; color: var(--muted); }
+
+/* Section link buttons */
+.anchor {
+  margin-left: .4em; vertical-align: middle;
+  font: 500 .72rem/1 var(--font-body); letter-spacing: .03em;
+  color: var(--muted); background: transparent; border: 1px solid transparent;
+  border-radius: 999px; padding: 5px 9px; cursor: pointer; opacity: 0;
+  transition: opacity .15s;
+}
+h2:hover .anchor, h3:hover .anchor, h4:hover .anchor, .anchor:focus-visible, .anchor.done { opacity: 1; }
+.anchor:hover { border-color: var(--line); color: var(--accent); }
+.anchor.done { color: var(--accent); border-color: var(--accent); }
+@media (hover: none) { .anchor { opacity: .75; } }
+
+.flash { animation: flash 2.2s ease-out; }
+@keyframes flash { 0%, 35% { background: var(--mark); } 100% { background: transparent; } }
+@media (prefers-reduced-motion: reduce) { .flash { animation: none; background: var(--mark); } .anchor { transition: none; } }
+
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 8px;
+  font-size: .85rem; max-width: calc(100% - 32px); overflow-wrap: anywhere; z-index: 20;
+}
+
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 20px 48px; }
+  nav.toc { position: static; max-height: none; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 14px; }
+  .toc details > summary { cursor: pointer; margin-bottom: 0; }
+  .toc details[open] > summary { margin-bottom: 12px; }
+  .toc details > summary::after { content: " +"; }
+  .toc details[open] > summary::after { content: " –"; }
+  h1 { font-size: 1.7rem; }
+  h2 { font-size: 1.4rem; }
+}
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} [hidden]{display:none!important} img{max-width:100%}</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <strong id="brand-title">Reisekostenrichtlinie</strong>
+      <span id="brand-sub">ysura GmbH · Version 1.8 · Stand 20.01.2020</span>
+    </div>
+    <div class="lang" role="group" aria-label="Sprache / Language">
+      <button type="button" id="btn-de" data-lang="de" aria-pressed="true">DE</button>
+      <button type="button" id="btn-en" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Inhalt">
+    <details id="toc-details" open>
+      <summary id="toc-label">Inhalt</summary>
+      <ol id="toc-list"></ol>
+    </details>
+  </nav>
+
+  <main>
+<!-- ============================================================
+     DEUTSCH
+     Jede Überschrift braucht eine eindeutige id (de-...).
+     Die gleiche Nummer in EN heißt en-... – so funktioniert der
+     Sprachwechsel an derselben Stelle.
+     ============================================================ -->
+<article id="art-de" lang="de">
+  <h1>Reisekostenrichtlinie</h1>
+  <div class="meta"><span><b>Version</b> 1.8</span><span><b>Stand</b> 20.01.2020</span><span><b>Gültig für</b> alle Mitarbeiter der ysura GmbH</span></div>
+
+  <h2 id="de-1"><span class="num">1</span>Einleitung</h2>
+  <p>Dieses Dokument beschreibt alle im Zusammenhang mit der Vorbereitung, Durchführung und Abrechnung von Dienstreisen relevanten Aspekte.</p>
+  <p>Die Reisekostenrichtlinie ist für alle Mitarbeiter der ysura GmbH in der jeweils aktuellen Version verpflichtend. Ziel ist eine einfache und korrekte Abwicklung von geschäftlichen Reisekosten und eventuell anfallenden Spesen.</p>
+  <p>Änderungen zu den folgenden Punkten gelten nur nach Genehmigung durch ysura vor Buchung / Reiseantritt.</p>
+  <p>Für alle Fragen rund um dieses Thema stehen als Ansprechpartner zur Verfügung:</p>
+  <ul class="contacts">
+    <li>Backoffice <code>backoffice@ysura.com</code></li>
+    <li>Alexander Schramm <code>alexander.schramm@ysura.com</code></li>
+  </ul>
+
+  <h3 id="de-1-1"><span class="num">1.1</span>Reisetätigkeit und -dauer</h3>
+  <p>Eine Dienstreise liegt vor, wenn jemand aus beruflichen Gründen vorübergehend außerhalb seiner ersten Tätigkeitsstätte und außerhalb seiner Wohnung tätig ist. Die Dienstreisezeit gilt als Arbeitszeit, wenn sie in die Zeitspanne der regulären Dienstzeit fällt.</p>
+  <p>Wenn der Projekteinsatzort mit dem Dienstsitz des Mitarbeiters übereinstimmt (bezogen auf den Ort), entsteht generell kein Anspruch auf Erstattung von Dienstreisen.</p>
+
+  <h3 id="de-1-2"><span class="num">1.2</span>Vorbereitung der Dienstreise</h3>
+  <p>Generell gilt: Es ist immer die für ysura günstigste Variante zu wählen. Daher sind sämtliche Reisebuchungen möglichst frühzeitig zu planen, um günstige Tarifklassen nutzen zu können. Reisebuchungen (außer Flügen) werden i.d.R. durch den Arbeitnehmer selbst vorgenommen.</p>
+
+  <h4 id="de-1-2-1"><span class="num">1.2.1</span>Verkehrsmittel</h4>
+  <p>Grundsätzlich ist das unter Zeit- und Zweckmäßigkeitsaspekten kostengünstigste Verkehrsmittel zu wählen.</p>
+  <dl class="modes">
+    <div><dt>Öffentliche Verkehrsmittel</dt><dd>Wenn absehbar ist, dass wenig Fahrten zum Kunden anfallen werden, bitte immer Einzelfahrscheine kaufen. Wenn es sehr wahrscheinlich ist, dass häufige Fahrten zum Kunden anfallen, bitte Wochen- oder Monatstickets kaufen. Werden Zeitkarten über die Reisekostenabrechnung eingereicht, ist ein Nachweis über die Rentabilität zu führen: Bitte benutzt das entsprechende Template und reicht es zusammen mit Eurer Zeitkarte ein.</dd></div>
+    <div><dt>Bahn</dt><dd>Bahnfahrten werden für die 2. Klasse erstattet. Ist eine BahnCard vorhanden, sollte diese natürlich genutzt werden. Die Beantragung einer neuen BahnCard (max. BahnCard 50, 2. Klasse) erfordert die vorherige Genehmigung durch ysura (bitte wendet Euch vor Kauf einer BahnCard an das Backoffice oder Alexander Schramm). Bitte reicht möglichst zeitnah und unaufgefordert den Nachweis über die Rentabilität ein.</dd></div>
+    <div><dt>PKW</dt><dd>
+      <p>Bei Fahrten mit dem privaten PKW werden nach den gesetzlichen Regelungen R 9.5 LStR derzeit Kosten i.H.v. <strong>0,30 € / km</strong> erstattet. Wirtschaftlich günstigere Alternativen (z.B. öffentliche Verkehrsmittel) sind i.d.R. zu bevorzugen. Für die Erstattung von Fahrtkosten gilt:</p>
+      <ul>
+        <li>Erstattungsfähig ist immer nur die kürzeste (bezogen auf die Entfernung) Strecke gem. einem gebräuchlichen Routenplaner (z.B. Google Maps).</li>
+        <li>Dies kann je nach Wohnort entweder die Strecke Wohnung ↔ Projekteinsatzort oder ysura-Büro ↔ Projekteinsatzort sein.</li>
+        <li>Für die wichtigsten Kunden finden sich die anzusetzenden Kilometer für die Strecke ysura-Büro ↔ Projekteinsatzort im Intranet. Ist hier eine Kilometeranzahl hinterlegt, so ist diese verpflichtend zu verwenden (sofern die Strecke Wohnung ↔ Projekteinsatzort nicht die kürzere ist).</li>
+        <li>Für Strecken ≥ 50 Kilometer (Hin- und Rückfahrt) ist vorab mit dem zuständigen ysura-Projektleiter Rücksprache zu halten.</li>
+        <li>Bei Unklarheiten ist vorab mit dem Backoffice Rücksprache zu halten.</li>
+      </ul></dd></div>
+    <div><dt>Mietwagen</dt><dd>Mietwagenkosten werden bis zur Kompaktklasse (z.B. VW Golf) erstattet. Den Mietwagen wieder vollgetankt zurückgeben, um die Aufschläge für das Betanken durch den Vermieter zu vermeiden. Eine private Nutzung des Mietwagens ist untersagt.</dd></div>
+    <div><dt>Flugzeug</dt><dd>Flugreisen werden i.d.R. in der Economy-Klasse gebucht / erstattet.</dd></div>
+    <div><dt>Transfer</dt><dd>Für Fahrten von und zum Flughafen / Bahnhof sind nach Möglichkeit öffentliche Verkehrsmittel (z.B. Bus, U-Bahn, S-Bahn) zu nutzen. Wird alternativ hierzu ein Taxi benutzt, so sollen nach Möglichkeit Fahrgemeinschaften mit anderen ysura-Mitarbeitern gebildet werden.
+      <div class="note"><strong>Hinweis:</strong> Auf Taxiquittungen muss der Taxifahrer 19 % oder 7 % USt. ankreuzen. Bitte den jeweiligen Betrag dann auch in der richtigen Zeile im Reisekostensheet eintragen.</div></dd></div>
+  </dl>
+
+  <h4 id="de-1-2-2"><span class="num">1.2.2</span>Übernachtung</h4>
+  <p>Für Übernachtungen dürfen grundsätzlich nur Hotels in der Preiskategorie bis <strong>120,00 € pro Übernachtung inkl. Frühstück</strong> gewählt werden. ysura behält sich vor, selbst die Hotelbuchung für den Mitarbeiter vorzunehmen. Dies kann unter Umständen, z.B. bei längeren Hotelaufenthalten, sinnvoll sein, um einen Rabatt zu verhandeln.</p>
+  <p>ysura übernimmt grundsätzlich die Kosten für die Übernachtung einschließlich Frühstück. Nebenkosten der Übernachtung (z.B. Minibar, Pay-TV) werden generell nicht erstattet.</p>
+  <p>Hotelrechnungen müssen immer auf die Adresse der ysura GmbH ausgestellt sein:</p>
+  <div class="addr">ysura GmbH<br>Metzstraße 14b<br>81667 München</div>
+  <p>Ist die Hotelrechnung auf den Namen des Arbeitnehmers ausgestellt, kann lediglich der Netto-Betrag erstattet werden.</p>
+  <p>Auf den Hotelrechnungen werden nur die Übernachtungen mit 7 % USt. ausgewiesen. Auf alles andere (Frühstück, Minibar, Internet, Telefon etc.) werden 19 % USt. berechnet. Dies bedeutet, dass aus den Hotelrechnungen immer hervorgeht, wie teuer das Frühstück ist. Daher ist ysura leider verpflichtet, folgende Beträge abzuziehen:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Auf der Rechnung ausgewiesen</th><th>Abzug (Sachbezugswert pro Übernachtung)</th></tr></thead>
+    <tbody>
+      <tr><td>Frühstück</td><td class="amt">5,60 €</td></tr>
+      <tr><td>Mittag- / Abendessen oder „Servicepauschale“, „Business Package“ o.Ä.</td><td class="amt">11,20 €</td></tr>
+    </tbody>
+  </table></div>
+  <p>ysura organisiert bei Hotelaufenthalten &gt; 7 Werktagen gerne vorab eine Kostenübernahme, sodass der Mitarbeiter vor Ort keine Kosten vorstrecken muss. Um eine Kostenübernahme beim Hotel zu beantragen, bitte rechtzeitig vor Reiseantritt ans Backoffice oder Alexander Schramm wenden.</p>
+  <p>Auch im Fall einer Kostenübernahme muss der Sachbezugswert für Frühstück in der Reisekostenabrechnung des Mitarbeiters abgezogen werden. Hierfür hat der Mitarbeiter Sorge zu tragen.</p>
+
+  <h4 id="de-1-2-3"><span class="num">1.2.3</span>Bewirtungsbelege</h4>
+  <p><strong>Bis einschließlich 250,00 € brutto:</strong> Zum Nachweis der betrieblichen Veranlassung der Aufwendungen sind folgende Angaben zwingend erforderlich:</p>
+  <ul>
+    <li>Ort</li><li>Tag</li><li>Name und Firma der Teilnehmer</li><li>Name des Bewirtenden</li>
+    <li>Anlass der Bewirtung („Projektbesprechung“ genügt nicht)</li><li>Höhe der Aufwendungen</li><li>Unterschrift</li>
+  </ul>
+  <p><strong>Ab 250,00 € brutto:</strong> Wenn der Bewirtungsbeleg 250,00 € inklusive Umsatzsteuer übersteigt, müssen alle übrigen Rechnungspflichtangaben, die bei allen anderen Rechnungen auch gelten, zusätzlich erfüllt sein. Hierzu gehört, dass der vollständige Name des Unternehmens (ysura) einschließlich Rechtsform (GmbH) und Anschrift auf dem Beleg angegeben ist. Diese Angaben können vom Wirt handschriftlich auf dem Bewirtungsbeleg eingetragen werden.</p>
+  <div class="note"><strong>Tipp:</strong> Bei größeren Geschäftsessen sollte mit der Gaststätte von vornherein vereinbart werden, dass eine Rechnung mit allen Rechnungspflichtangaben zugeschickt wird. Am besten ist es, wenn der Wirt den jeweiligen Verzehrbon zusätzlich mitschickt. In einem solchen Fall bitte vorher Rücksprache mit ysura halten.</div>
+  <p>Grundsätzlich ist aus steuerlicher Sicht Essengehen Teil der privaten Lebenshaltung. Lediglich bei geschäftlicher Veranlassung und Teilnahme von mind. einer weiteren Person ist ein Ansatz bei den Reisekosten möglich.</p>
+
+  <h4 id="de-1-2-4"><span class="num">1.2.4</span>Verpflegungsmehraufwand</h4>
+  <p>Folgende Beträge können in Deutschland laut § 4 Abs. 5 Satz 1 Nr. 5 EStG derzeit steuerfrei für die angegebenen Abwesenheitszeiten durch ysura erstattet werden:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Abwesenheit</th><th>Erstattung</th></tr></thead>
+    <tbody>
+      <tr><td>mehr als 24 Stunden</td><td class="amt">28,00 €</td></tr>
+      <tr><td>mehr als 8 Stunden</td><td class="amt">14,00 €</td></tr>
+      <tr><td>weniger als 8 Stunden</td><td class="amt">0,00 €</td></tr>
+    </tbody>
+  </table></div>
+  <p>Der jeweils zu erstattende Betrag wird anhand der im Reisekosten-Template erfassten Zeiten automatisch errechnet.</p>
+  <p>Es darf kein Verpflegungsmehraufwand gezahlt werden, wenn man an einer Bewirtung teilgenommen hat. Daher wurde im Reisekosten-Template eine Formel hinterlegt, die, sobald ein Bewirtungsbeleg erfasst wird, den Betrag für den Verpflegungsmehraufwand auf 0,00 € setzt. Wenn man zu einem Essen eingeladen wurde, muss der Betrag für Verpflegungsmehraufwand manuell auf 0,00 € gesetzt werden.</p>
+  <div class="note"><strong>Hinweis:</strong> Bei Auslandsreisen gelten abweichende Beträge für den Verpflegungsmehraufwand. Auskünfte hierzu erteilt ysura gerne auf Anfrage. Das Auslandstagegeld richtet sich nach dem Ort, den der Reisende vor 24:00 Uhr Ortszeit zuletzt erreicht. Liegt bei Rückreisetagen vom Ausland ins Inland der vor 24 Uhr Ortszeit erreichte Ort im Inland, bestimmt sich der Pauschbetrag nach dem letzten Tätigkeitsort im Ausland.</div>
+
+  <h4 id="de-1-2-5"><span class="num">1.2.5</span>Nebenkosten</h4>
+  <p>Nebenkosten sind Auslagen für Parkgebühren, geschäftliche Telefonate usw., die im Rahmen einer Dienstreise entstehen. Diese Nebenkosten werden nach Vorlage eines Belegs / einer Quittung von ysura erstattet. Hierbei gelten folgende Einschränkungen:</p>
+  <ul>
+    <li>Parkgebühren werden nur erstattet, falls kein kostenfreier Parkplatz verfügbar ist.</li>
+    <li>Eigenbelege können aus steuerlichen Gründen nur in Ausnahmefällen akzeptiert werden.</li>
+    <li>Bei geschäftlichen Telefonaten (z.B. im Hotel) ist ein Einzelnachweis zur Erstattung notwendig.</li>
+  </ul>
+
+  <h4 id="de-1-2-5-1"><span class="num">1.2.5.1</span>Parken am Flughafen München</h4>
+  <p>Parkgebühren am Flughafen werden nur bei Kurztrips (max. eine Übernachtung) erstattet. Bei Reisen ab 3 Tagen werden die Kosten nur erstattet, wenn vor Reiseantritt ein Parkplatz reserviert wird. Preisinformationen finden sich unter <a href="http://www.parken-muc.de" target="_blank" rel="noopener">www.parken-muc.de</a>.</p>
+  <p>Die Parkplätze befinden sich in der Eichenstr. 8 in 85445 Schwaig. Für den Transfer ist ein entsprechendes Zeitpolster einzuplanen.</p>
+
+  <h4 id="de-1-2-6"><span class="num">1.2.6</span>Einreisebestimmungen / Visa</h4>
+  <p>Bei Reisen ins Ausland gilt dies auch bezüglich der Beachtung der Einreisebestimmungen sowie Impf- und Gesundheitsbestimmungen und die evtl. notwendige Beantragung und Einholung von Visa. ysura unterstützt an dieser Stelle gerne, soweit möglich / zulässig.</p>
+
+  <h4 id="de-1-2-7"><span class="num">1.2.7</span>Währungsumrechnung</h4>
+  <p>Für das Ausfüllen des Reisekostentemplates ist es wichtig, Kosten in ausländischen Währungen taggenau in Euro umzurechnen. Bitte hierfür folgenden Währungsumrechner benutzen: <a href="http://www.oanda.com/convert/classic?lang=de" target="_blank" rel="noopener">OANDA Währungsrechner</a>.</p>
+
+  <h4 id="de-1-2-8"><span class="num">1.2.8</span>Abgabefrist</h4>
+  <p>Es werden nur Reisekosten erstattet, die <strong>bis zum 10. Werktag des übernächsten Monats</strong> vollständig vorliegen.</p>
+  <div class="note"><strong>Beispiel:</strong> Reisekosten, die im Januar anfallen, müssen spätestens am 10. Werktag des Monats März eingereicht werden.</div>
+  <p>Generell wird immer um eine möglichst zeitnahe Abgabe aller notwendigen Unterlagen gebeten.</p>
+
+  <h2 id="de-2"><span class="num">2</span>Reisebuchung</h2>
+  <h3 id="de-2-1"><span class="num">2.1</span>Bahn</h3>
+  <p>Einfachster Weg ist die direkte Buchung über die Deutsche Bahn: <a href="http://www.bahn.de" target="_blank" rel="noopener">www.bahn.de</a>. Nach Möglichkeit sollten auch Bahntickets vorab gebucht werden, um die Aufschläge zu vermeiden, die anfallen, wenn das Ticket erst im Zug gekauft wird.</p>
+  <h3 id="de-2-2"><span class="num">2.2</span>Hotel</h3>
+  <p>Dem Mitarbeiter ist es generell freigestellt, über welchen Weg er eine Hotelbuchung vornimmt. Einzige Ausnahme stellt die Buchung über www.hotels.com dar, da die Firma im Ausland sitzt und somit die Rechnungen nicht steuerlich ansetzbar sind. Als Ausgangspunkt für die Hotelbuchung bieten sich entsprechende Portale an. Eine Empfehlung ist hierbei: <a href="http://www.hotel.de" target="_blank" rel="noopener">www.hotel.de</a>.</p>
+  <h3 id="de-2-3"><span class="num">2.3</span>Mietwagen</h3>
+  <p>Dem Mitarbeiter ist es freigestellt, über welchen Weg er einen Mietwagen reserviert.</p>
+  <h3 id="de-2-4"><span class="num">2.4</span>Flug</h3>
+  <p>Für die Buchung von Flügen wendet Euch bitte mit ausreichend Vorlaufzeit an das Backoffice.</p>
+
+  <h2 id="de-3"><span class="num">3</span>Reisekostenabrechnung</h2>
+  <h3 id="de-3-1"><span class="num">3.1</span>Template</h3>
+  <p>Für die Abrechnung von Reisekosten ist das jeweils aktuelle Template zu verwenden. Auf dieses kann über folgenden Weg zugegriffen werden: ysura Server.</p>
+  <p>Das Template umfasst zwei relevante Arbeitsblätter: einmal für die interne Reisekostenabrechnung (Arbeitnehmer gegenüber ysura, Arbeitsblatt „Intern – Internal“) und einmal für die externe Reisekostenabrechnung (ysura gegenüber dem Kunden, Arbeitsblatt „Kunde – Customer“). Im Sheet für die Abrechnung von Dienstreisen ins Ausland findet sich noch ein weiteres Arbeitsblatt mit den entsprechenden VMA-Sätzen (Arbeitsblatt „Tagessätze – Daily Rates“).</p>
+  <p>Die Erfassung der Reisekosten erfolgt ausschließlich über das Arbeitsblatt „Intern – Internal“. Alle Beträge sind als Brutto-Beträge zu erfassen.</p>
+
+  <h3 id="de-3-2"><span class="num">3.2</span>How to fill in – Arbeitsblatt „Intern – Internal“</h3>
+  <ul>
+    <li>Aktuellstes Template verwenden (keine Spalten / Zeilen selbst einbauen, keine Formeln ändern!).</li>
+    <li>Belege sind immer im Original einzureichen.</li>
+    <li>Eine Reisekostenabrechnung umfasst immer maximal ein Projekt (wenn dieses an einen Kunden weiterberechnet wird).</li>
+    <li>Eine Reisekostenabrechnung umfasst immer maximal einen Monat.</li>
+    <li>Solltet Ihr zum Essen eingeladen worden sein, muss der Betrag für Verpflegungsmehraufwand manuell auf 0,00 € gesetzt werden. Sobald ein Bewirtungsbeleg eingetragen wird, wird der Betrag für Verpflegungsmehraufwand automatisch auf 0,00 € gesetzt. <em>Hinweis: Hiermit ist kein belegtes Brötchen während eines Meetings gemeint, sondern ein vollwertiges Essen, z.B. im Restaurant oder in Form einer Bewirtung in einer Firmenkantine.</em></li>
+    <li>Bei Fahrten mit dem privaten PKW: immer die kürzeste Strecke (entweder Wohnung → Projektort oder Büro → Projektort) lt. Routenplaner angeben; immer nur auf ganze Kilometer gerundete Kilometer angeben.</li>
+    <li>Bei Taxiquittungen: Bitte darauf achten, ob auf der Quittung 19 % oder 7 % USt. angegeben ist, und in die entsprechende Zeile im Arbeitsblatt eintragen.</li>
+    <li>Sollte bei einer Hotelbuchung eine Kostenübernahme seitens ysura vorgelegen haben und wurde Frühstück mitgebucht, muss der Mitarbeiter den Sachbezugswert für Frühstück abziehen.</li>
+    <li>„Bewirtungskosten (inkl. Geschäftspartner)“: Hier bitte alle Bewirtungskosten eintragen, bei denen mind. 1 externer Partner (Kunden, Partnerfirmen, Freelancer etc.) eingeladen war.</li>
+    <li>„Bewirtungskosten (nur MCS-Mitarbeiter)“: Hier bitte alle Bewirtungskosten eintragen, bei denen keine externen Partner eingeladen waren (eine vorherige Freigabe durch einen Vorgesetzten ist unbedingt erforderlich).</li>
+    <li>Belege in chronologischer Reihenfolge auf DIN-A4-Blätter aufkleben (mit Pritt, nicht tackern / kein Tesa!), ohne dass Belege überstehen, und mit einer Büroklammer an das ausgedruckte und unterzeichnete Arbeitsblatt anheften.</li>
+  </ul>
+
+  <h4 id="de-3-2-1"><span class="num">3.2.1</span>Hinweise bei Auslandsreisen</h4>
+  <ul>
+    <li>Die Kosten für die Auslandsübernachtungen bitte unter dem Punkt „Übernachtungskosten Ausland“ eintragen.</li>
+    <li>Die VMA-Sätze müssen selbst ermittelt und eingetragen werden. Dazu findet Ihr im Blatt „Tagessätze – Daily Rates“ eine Tabelle.</li>
+    <li>Für die An- und Abreisetage gelten unabhängig von der tatsächlichen Abwesenheit in Stunden <strong>immer</strong> die Sätze für Abwesenheiten ab acht Stunden.</li>
+    <li>Der Sachbezugswert wird abhängig von dem ausgewählten Land und der Übernachtungsart automatisch ermittelt und eingetragen. Hierbei gilt: Ist Frühstück ausgewiesen, 20 % des Satzes für 24 Stunden im jeweiligen Land; bei ausgewiesenem Mittag- / Abendessen oder Positionen wie „Servicepauschale“, „Business Package“ o.Ä. 40 % des Satzes für 24 Stunden im jeweiligen Land.</li>
+    <li>Alle anderen Kosten, wie zum Beispiel Taxifahrten oder Bewirtungsausgaben, genauso auch das Flugticket des Auslandsflugs (falls dieses selbst bezahlt wurde), fallen unter den Punkt „Sonstiges – 0 % oder Ausland“ und müssen vorab tagesaktuell mit OANDA umgerechnet werden.</li>
+  </ul>
+
+  <h3 id="de-3-3"><span class="num">3.3</span>How to fill in – Arbeitsblatt „Kunde – Customer“</h3>
+  <ul>
+    <li>Die Daten werden automatisch aus dem Arbeitsblatt „Intern – Internal“ übernommen.</li>
+    <li>Falls Kosten (nicht) an den Kunden weiterbelastet werden sollen, bitte diese Beträge manuell aus dem Arbeitsblatt „Kunde – Customer“ löschen bzw. hinzufügen / ändern.</li>
+    <li>Das Arbeitsblatt bitte auch ausdrucken, unterzeichnen und die betreffenden Belege in Kopie mit einer Büroklammer anhängen.</li>
+  </ul>
+
+  <h3 id="de-3-4"><span class="num">3.4</span>Abgabe und Erstattung</h3>
+  <p>Unterlagen ins Postausgangsfach legen. Nach Prüfung und Freigabe erfolgt die Überweisung.</p>
+
+  <footer class="foot">© ysura GmbH · Reisekostenrichtlinie v1.8 · Stand 20.01.2020. Fragen: <code>backoffice@ysura.com</code></footer>
+</article>
+
+<!-- ============================================================
+     ENGLISH
+     Every heading needs a unique id (en-...), matching the
+     German number so the language switch lands on the same spot.
+     ============================================================ -->
+<article id="art-en" lang="en" hidden>
+  <h1>Travel Expense Policy</h1>
+  <div class="meta"><span><b>Version</b> 1.8</span><span><b>Status</b> 20 Jan 2020</span><span><b>Applies to</b> all employees of ysura GmbH</span></div>
+
+  <h2 id="en-1"><span class="num">1</span>Introduction</h2>
+  <p>This document describes all relevant aspects of preparing, carrying out and accounting for business trips.</p>
+  <p>The current version of the Travel Expense Policy is binding for all employees of ysura GmbH. The aim is simple and correct processing of business travel costs and any expenses incurred.</p>
+  <p>Deviations from the following points are only valid if approved by ysura before booking / before the trip starts.</p>
+  <p>For all questions on this topic, please contact:</p>
+  <ul class="contacts">
+    <li>Back Office <code>backoffice@ysura.com</code></li>
+    <li>Alexander Schramm <code>alexander.schramm@ysura.com</code></li>
+  </ul>
+
+  <h3 id="en-1-1"><span class="num">1.1</span>Travel activity and duration</h3>
+  <p>A business trip is deemed to have taken place if a person temporarily works outside their first place of work and outside their home for professional reasons. Travel time counts as working time if it falls within regular working hours.</p>
+  <p>If the project location is the same place as the employee's place of work, there is generally no entitlement to reimbursement of travel expenses.</p>
+
+  <h3 id="en-1-2"><span class="num">1.2</span>Preparing the business trip</h3>
+  <p>As a general rule, always choose the most cost-effective option for ysura. Plan all travel bookings as early as possible to benefit from low fare classes. Travel bookings (except flights) are usually made by the employees themselves.</p>
+
+  <h4 id="en-1-2-1"><span class="num">1.2.1</span>Means of transport</h4>
+  <p>In principle, choose the most cost-effective means of transport, taking time and practicality into account.</p>
+  <dl class="modes">
+    <div><dt>Public transport</dt><dd>If only a few trips to the customer are expected, please always buy single tickets. If frequent trips to the customer are very likely, please buy weekly or monthly tickets. If season tickets are submitted with the travel expense report, proof of cost-effectiveness is required: please use the corresponding template and submit it together with your season ticket.</dd></div>
+    <div><dt>Rail</dt><dd>Rail travel is reimbursed for 2nd class. If you have a BahnCard, you should of course use it. Buying a new BahnCard (max. BahnCard 50, 2nd class) requires prior approval by ysura (please contact the Back Office or Alexander Schramm before buying one). Please submit proof of cost-effectiveness promptly and without being asked.</dd></div>
+    <div><dt>Private car</dt><dd>
+      <p>For journeys by private car, <strong>€0.30 / km</strong> is currently reimbursed in accordance with the statutory regulation R 9.5 LStR. Cheaper alternatives (e.g. public transport) are generally preferred. The following applies to the reimbursement of travel costs:</p>
+      <ul>
+        <li>Only the shortest route (by distance) according to a common route planner (e.g. Google Maps) is reimbursable.</li>
+        <li>Depending on where you live, this is either home ↔ project location or ysura office ↔ project location.</li>
+        <li>For the most important customers, the kilometres to be used for ysura office ↔ project location are listed on the intranet. If a distance is listed there, it must be used (unless home ↔ project location is shorter).</li>
+        <li>For distances ≥ 50 km (round trip), please consult the responsible ysura project manager in advance.</li>
+        <li>If anything is unclear, please consult the Back Office in advance.</li>
+      </ul></dd></div>
+    <div><dt>Rental car</dt><dd>Rental car costs are reimbursed up to compact class (e.g. VW Golf). Return the car with a full tank to avoid refuelling surcharges from the rental company. Private use of the rental car is not permitted.</dd></div>
+    <div><dt>Air travel</dt><dd>Flights are generally booked / reimbursed in economy class.</dd></div>
+    <div><dt>Transfer</dt><dd>For journeys to and from the airport / railway station, use public transport (e.g. bus, U-Bahn, S-Bahn) wherever possible. If you take a taxi instead, please share it with other ysura employees where possible.
+      <div class="note"><strong>Note:</strong> On taxi receipts, the driver must tick 19% or 7% VAT. Please enter the amount in the matching line of the travel expense sheet.</div></dd></div>
+  </dl>
+
+  <h4 id="en-1-2-2"><span class="num">1.2.2</span>Overnight stays</h4>
+  <p>Only hotels up to <strong>€120.00 per night including breakfast</strong> may be booked. ysura reserves the right to book the hotel for the employee itself. This can be useful, for example for longer stays, to negotiate a discount.</p>
+  <p>ysura generally covers the cost of accommodation including breakfast. Incidental hotel costs (e.g. minibar, pay-TV) are not reimbursed.</p>
+  <p>Hotel invoices must always be made out to ysura GmbH:</p>
+  <div class="addr">ysura GmbH<br>Metzstraße 14b<br>81667 München</div>
+  <p>If the hotel invoice is made out to the employee's name, only the net amount can be reimbursed.</p>
+  <p>On hotel invoices, only the room itself is charged at 7% VAT. Everything else (breakfast, minibar, internet, phone etc.) is charged at 19% VAT. This means the invoice always shows what breakfast cost, so ysura is obliged to deduct the following amounts:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Shown on the invoice</th><th>Deduction (benefit in kind per night)</th></tr></thead>
+    <tbody>
+      <tr><td>Breakfast</td><td class="amt">€5.60</td></tr>
+      <tr><td>Lunch / dinner, or "service charge", "business package" or similar</td><td class="amt">€11.20</td></tr>
+    </tbody>
+  </table></div>
+  <p>For hotel stays of more than 7 working days, ysura is happy to arrange direct billing in advance so the employee does not have to pay on site. To request this, please contact the Back Office or Alexander Schramm in good time before the trip.</p>
+  <p>Even with direct billing, the benefit-in-kind value for breakfast must be deducted in the employee's travel expense report. The employee is responsible for this.</p>
+
+  <h4 id="en-1-2-3"><span class="num">1.2.3</span>Hospitality receipts</h4>
+  <p><strong>Up to and including €250.00 gross:</strong> To prove the business purpose of the expense, the following details are mandatory:</p>
+  <ul>
+    <li>Place</li><li>Date</li><li>Names and companies of the participants</li><li>Name of the host</li>
+    <li>Reason for the hospitality ("project meeting" is not sufficient)</li><li>Amount</li><li>Signature</li>
+  </ul>
+  <p><strong>Above €250.00 gross:</strong> If the receipt exceeds €250.00 including VAT, all other mandatory invoice details that apply to every invoice must also be included. This means the full company name (ysura), legal form (GmbH) and address must appear on the receipt. The restaurant can add these by hand.</p>
+  <div class="note"><strong>Tip:</strong> For larger business meals, agree with the restaurant in advance that they send an invoice with all mandatory details, ideally together with the itemised bill. In that case, please check with ysura beforehand.</div>
+  <p>From a tax perspective, eating out is generally a private expense. It can only be claimed as a travel expense if there is a business reason and at least one other person takes part.</p>
+
+  <h4 id="en-1-2-4"><span class="num">1.2.4</span>Meal allowances</h4>
+  <p>Under § 4 (5) sentence 1 no. 5 EStG, ysura can currently reimburse the following tax-free amounts in Germany for the stated periods of absence:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Absence</th><th>Reimbursement</th></tr></thead>
+    <tbody>
+      <tr><td>more than 24 hours</td><td class="amt">€28.00</td></tr>
+      <tr><td>more than 8 hours</td><td class="amt">€14.00</td></tr>
+      <tr><td>less than 8 hours</td><td class="amt">€0.00</td></tr>
+    </tbody>
+  </table></div>
+  <p>The amount is calculated automatically from the times entered in the travel expense template.</p>
+  <p>No meal allowance may be paid if you took part in a hospitality meal. The template therefore contains a formula that sets the meal allowance to €0.00 as soon as a hospitality receipt is entered. If you were invited to a meal, you must set the meal allowance to €0.00 manually.</p>
+  <div class="note"><strong>Note:</strong> Different meal allowance rates apply for trips abroad; ysura will provide them on request. The foreign daily allowance depends on the last place the traveller reaches before midnight local time. On the day of return from abroad, if the place reached before midnight is in Germany, the rate of the last place of work abroad applies.</div>
+
+  <h4 id="en-1-2-5"><span class="num">1.2.5</span>Incidental costs</h4>
+  <p>Incidental costs are expenses such as parking fees or business phone calls incurred during a business trip. ysura reimburses them on presentation of a receipt. The following restrictions apply:</p>
+  <ul>
+    <li>Parking fees are only reimbursed if no free parking is available.</li>
+    <li>For tax reasons, self-issued receipts can only be accepted in exceptional cases.</li>
+    <li>Business phone calls (e.g. from a hotel) require an itemised record for reimbursement.</li>
+  </ul>
+
+  <h4 id="en-1-2-5-1"><span class="num">1.2.5.1</span>Parking at Munich Airport</h4>
+  <p>Airport parking is only reimbursed for short trips (max. one overnight stay). For trips of 3 days or more, costs are only reimbursed if a parking space was reserved before departure. Prices: <a href="http://www.parken-muc.de" target="_blank" rel="noopener">www.parken-muc.de</a>.</p>
+  <p>The car park is at Eichenstr. 8, 85445 Schwaig. Allow enough time for the transfer.</p>
+
+  <h4 id="en-1-2-6"><span class="num">1.2.6</span>Entry requirements / visas</h4>
+  <p>For trips abroad, this also applies to entry regulations, vaccination and health requirements, and applying for any visas needed. ysura is glad to help where possible and permitted.</p>
+
+  <h4 id="en-1-2-7"><span class="num">1.2.7</span>Currency conversion</h4>
+  <p>When filling in the travel expense template, convert costs in foreign currencies into euros using the rate of the exact day. Please use this converter: <a href="http://www.oanda.com/convert/classic?lang=de" target="_blank" rel="noopener">OANDA currency converter</a>.</p>
+
+  <h4 id="en-1-2-8"><span class="num">1.2.8</span>Submission deadline</h4>
+  <p>Travel expenses are only reimbursed if they are complete <strong>by the 10th working day of the month after next</strong>.</p>
+  <div class="note"><strong>Example:</strong> Travel expenses incurred in January must be submitted by the 10th working day of March at the latest.</div>
+  <p>Please always submit all required documents as soon as possible.</p>
+
+  <h2 id="en-2"><span class="num">2</span>Travel booking</h2>
+  <h3 id="en-2-1"><span class="num">2.1</span>Rail</h3>
+  <p>The easiest way is to book directly with Deutsche Bahn: <a href="http://www.bahn.de" target="_blank" rel="noopener">www.bahn.de</a>. Book tickets in advance where possible to avoid the surcharge for buying on the train.</p>
+  <h3 id="en-2-2"><span class="num">2.2</span>Hotel</h3>
+  <p>Employees are free to choose how they book a hotel. The only exception is www.hotels.com: the company is based abroad, so its invoices are not tax-deductible. Booking portals are a good starting point; one recommendation is <a href="http://www.hotel.de" target="_blank" rel="noopener">www.hotel.de</a>.</p>
+  <h3 id="en-2-3"><span class="num">2.3</span>Rental car</h3>
+  <p>Employees are free to choose how they reserve a rental car.</p>
+  <h3 id="en-2-4"><span class="num">2.4</span>Flight</h3>
+  <p>To book flights, please contact the Back Office with sufficient lead time.</p>
+
+  <h2 id="en-3"><span class="num">3</span>Travel expense report</h2>
+  <h3 id="en-3-1"><span class="num">3.1</span>Template</h3>
+  <p>Always use the current template for travel expense reports. You can find it here: ysura server.</p>
+  <p>The template has two relevant worksheets: one for internal accounting (employee to ysura, worksheet "Intern – Internal") and one for external accounting (ysura to the customer, worksheet "Kunde – Customer"). The sheet for trips abroad has an additional worksheet with the meal allowance rates (worksheet "Tagessätze – Daily Rates").</p>
+  <p>Travel expenses are entered only in the worksheet "Intern – Internal". Enter all amounts as gross amounts.</p>
+
+  <h3 id="en-3-2"><span class="num">3.2</span>How to fill in – worksheet "Intern – Internal"</h3>
+  <ul>
+    <li>Use the latest template (do not add columns / rows, do not change formulas!).</li>
+    <li>Always submit original receipts.</li>
+    <li>One travel expense report covers at most one project (if it is charged on to a customer).</li>
+    <li>One travel expense report covers at most one month.</li>
+    <li>If you were invited to a meal, set the meal allowance to €0.00 manually. As soon as a hospitality receipt is entered, the meal allowance is set to €0.00 automatically. <em>Note: this does not mean a sandwich during a meeting, but a full meal, e.g. in a restaurant or a company canteen.</em></li>
+    <li>For journeys by private car: always enter the shortest route (home → project location or office → project location) according to a route planner; always round to whole kilometres.</li>
+    <li>For taxi receipts: check whether 19% or 7% VAT is shown and enter the amount in the matching line of the worksheet.</li>
+    <li>If ysura arranged direct billing for a hotel and breakfast was included, the employee must deduct the benefit-in-kind value for breakfast.</li>
+    <li>"Entertainment costs (incl. business partners)": enter all hospitality costs where at least one external partner (customers, partner companies, freelancers etc.) was invited.</li>
+    <li>"Entertainment costs (MCS employees only)": enter all hospitality costs where no external partners were invited (prior approval by a manager is mandatory).</li>
+    <li>Glue receipts in chronological order onto A4 sheets (with a glue stick, no staples / no sticky tape!) without receipts sticking out, and attach them with a paper clip to the printed and signed worksheet.</li>
+  </ul>
+
+  <h4 id="en-3-2-1"><span class="num">3.2.1</span>Notes for trips abroad</h4>
+  <ul>
+    <li>Enter accommodation costs abroad under "Übernachtungskosten Ausland" (overnight stays abroad).</li>
+    <li>You must look up and enter the meal allowance rates yourself, using the table in the worksheet "Tagessätze – Daily Rates".</li>
+    <li>On arrival and departure days, the rate for absences of 8 hours or more <strong>always</strong> applies, regardless of the actual hours.</li>
+    <li>The benefit-in-kind value is calculated automatically based on the selected country and type of accommodation: if breakfast is shown, 20% of the 24-hour rate for that country; if lunch / dinner or items like "service charge" or "business package" are shown, 40% of the 24-hour rate.</li>
+    <li>All other costs, e.g. taxis or hospitality, as well as the ticket for an international flight (if you paid for it yourself), go under "Sonstiges – 0% oder Ausland" (other – 0% or abroad) and must be converted with OANDA at the rate of the day.</li>
+  </ul>
+
+  <h3 id="en-3-3"><span class="num">3.3</span>How to fill in – worksheet "Kunde – Customer"</h3>
+  <ul>
+    <li>Data is transferred automatically from the worksheet "Intern – Internal".</li>
+    <li>If costs should (not) be charged to the customer, delete, add or change these amounts manually in the worksheet "Kunde – Customer".</li>
+    <li>Print this worksheet as well, sign it, and attach copies of the relevant receipts with a paper clip.</li>
+  </ul>
+
+  <h3 id="en-3-4"><span class="num">3.4</span>Submission and reimbursement</h3>
+  <p>Put your documents in the outgoing mail tray. After review and approval, the amount will be transferred.</p>
+
+  <footer class="foot">© ysura GmbH · Travel Expense Policy v1.8 · Status 20 Jan 2020. Questions: <code>backoffice@ysura.com</code></footer>
+</article>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  /* Address of the published page. Section links are built as BASE_URL + "#de-1-2-2".
+     Leave empty to use the address the page is opened from (works on GitHub Pages). */
+  var BASE_URL = "";
+
+  var UI = {
+    de: { title: "Reisekostenrichtlinie", sub: "ysura GmbH · Version 1.8 · Stand 20.01.2020", toc: "Inhalt",
+          copy: "Link kopieren", copied: "Kopiert", toastOk: "Link kopiert: ", toastFail: "Link zu diesem Abschnitt: " },
+    en: { title: "Travel Expense Policy", sub: "ysura GmbH · Version 1.8 · Status 20 Jan 2020", toc: "Contents",
+          copy: "Copy link", copied: "Copied", toastOk: "Link copied: ", toastFail: "Link to this section: " }
+  };
+  var lang = "de";
+  var arts = { de: document.getElementById("art-de"), en: document.getElementById("art-en") };
+  var tocList = document.getElementById("toc-list");
+  var toast = document.getElementById("toast");
+  var toastTimer;
+
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function base() { return BASE_URL || location.href.split("#")[0]; }
+
+  function showToast(text) {
+    toast.textContent = text; toast.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { toast.hidden = true; }, 4000);
+  }
+
+  function addAnchors(art, l) {
+    art.querySelectorAll("h2[id], h3[id], h4[id]").forEach(function (h) {
+      if (h.querySelector(".anchor")) return;
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "anchor"; b.textContent = "# " + UI[l].copy;
+      b.setAttribute("aria-label", UI[l].copy + ": " + h.textContent.trim());
+      b.addEventListener("click", function () {
+        var url = base() + "#" + h.id;
+        if (history.replaceState) history.replaceState(null, "", "#" + h.id);
+        var done = function () {
+          b.textContent = "✓ " + UI[l].copied; b.classList.add("done");
+          setTimeout(function () { b.textContent = "# " + UI[l].copy; b.classList.remove("done"); }, 1800);
+          showToast(UI[l].toastOk + url);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done, function () { showToast(UI[l].toastFail + url); });
+        } else { showToast(UI[l].toastFail + url); }
+      });
+      h.appendChild(b);
+    });
+  }
+
+  function buildToc() {
+    tocList.innerHTML = "";
+    arts[lang].querySelectorAll("h2[id], h3[id], h4[id]").forEach(function (h) {
+      var li = document.createElement("li");
+      var a = document.createElement("a");
+      a.href = "#" + h.id;
+      a.className = h.tagName === "H2" ? "l1" : h.tagName === "H3" ? "l2" : "l3";
+      var num = h.querySelector(".num");
+      var n = document.createElement("span"); n.className = "n"; n.textContent = num ? num.textContent : "";
+      var t = document.createElement("span");
+      var clone = h.cloneNode(true);
+      clone.querySelectorAll(".num, .anchor").forEach(function (x) { x.remove(); });
+      t.textContent = clone.textContent.trim();
+      a.appendChild(n); a.appendChild(t);
+      li.appendChild(a); tocList.appendChild(li);
+    });
+  }
+
+  function setLang(l) {
+    lang = l;
+    arts.de.hidden = l !== "de"; arts.en.hidden = l !== "en";
+    document.documentElement.lang = l;
+    document.getElementById("btn-de").setAttribute("aria-pressed", l === "de");
+    document.getElementById("btn-en").setAttribute("aria-pressed", l === "en");
+    document.getElementById("brand-title").textContent = UI[l].title;
+    document.getElementById("brand-sub").textContent = UI[l].sub;
+    document.getElementById("toc-label").textContent = UI[l].toc;
+    document.title = l === "de" ? "ysura Reisekostenrichtlinie" : "ysura Travel Expense Policy";
+    buildToc(); store("rk-lang", l);
+  }
+
+  function goToHash(smooth) {
+    var id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    var m = id.match(/^(de|en)-/);
+    if (m && m[1] !== lang) setLang(m[1]);
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+    el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+    if (window.innerWidth <= 860) document.getElementById("toc-details").open = false;
+  }
+
+  document.querySelectorAll(".lang button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var target = b.dataset.lang;
+      if (target === lang) return;
+      var id = decodeURIComponent(location.hash.slice(1));
+      setLang(target);
+      if (/^(de|en)-/.test(id)) {
+        var other = target + id.slice(2);
+        if (document.getElementById(other)) { location.hash = other; return; }
+      }
+    });
+  });
+
+  window.addEventListener("hashchange", function () { goToHash(true); });
+
+  /* highlight current section in the table of contents */
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        tocList.querySelectorAll("a").forEach(function (a) {
+          a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id);
+        });
+      });
+    }, { rootMargin: "-80px 0px -70% 0px" });
+    document.querySelectorAll("h2[id], h3[id], h4[id]").forEach(function (h) { io.observe(h); });
+  }
+
+  addAnchors(arts.de, "de"); addAnchors(arts.en, "en");
+  var start = (location.hash.match(/^#(de|en)-/) || [])[1] || read("rk-lang") || "de";
+  setLang(start === "en" ? "en" : "de");
+  if (window.innerWidth <= 860 && !location.hash) document.getElementById("toc-details").open = false;
+  goToHash(false);
+})();
+</script>
+
+</body>
+</html>
